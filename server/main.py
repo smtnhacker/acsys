@@ -4,11 +4,6 @@ from typing import Annotated, List
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 
-import uuid
-
-def gen_uid():
-    return str(uuid.uuid4())
-
 app = FastAPI(debug=True)
 
 origins = [
@@ -37,19 +32,33 @@ async def create_new_problem(
     subtasks: int = Form(...),
     model_solution: UploadFile = File(...),
     testscript: str = Form(...),
-    generators: UploadFile = File(...),
+    generators: UploadFile = File(...), # should be a list of files in the future
     validator: UploadFile = File(...),
     formatter: UploadFile = File(...)
 ):
-    
-    uid = gen_uid()
+
     
     # save all the necessary files here
-    os.mkdir(f"files/{uid}")
-    cwd = os.path.join(os.getcwd(), 'files', uid)
+    cwd = os.path.join(os.getcwd(), 'files')
 
     # try to run kompgen
-    print("Running:", f'kg init {title} --subtask {subtasks}')
-    subprocess.Popen(['kg', 'init', title, '--subtask', str(subtasks)], cwd=cwd)    
+    print("Running:", f'kg init {code} --subtask {subtasks}')
+    subprocess.call(['kg', 'init', code, '--subtask', str(subtasks)], cwd=cwd)
+    cwd = os.path.join(cwd, code)
 
-    return { "info": f"Generated content at {uid}" } 
+    # save the uploaded files
+    with open(f'{cwd}/formatter.py', "wb+") as f:
+        f.write(formatter.file.read())
+    with open(f'{cwd}/validator.py', "wb+") as f:
+        f.write(validator.file.read())
+    with open(f'{cwd}/generator.py', "wb+") as f:
+        f.write(generators.file.read())
+    with open(f'{cwd}/testscript', "w+") as f:
+        f.write(testscript)  
+    solution_type = model_solution.filename.split('.')[-1] # TODO: be able to use different kinds of solution
+    with open(f'{cwd}/solution.py', "wb+") as f:
+        f.write(model_solution.file.read())
+    with open(f'{cwd}/description.md', "w+") as f:
+        f.write(description)
+
+    return { "info": f"Generated content at files/{code}" } 
