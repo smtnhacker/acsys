@@ -58,7 +58,7 @@ async def create_new_problem(
     solution_type = model_solution.filename.split('.')[-1] # TODO: be able to use different kinds of solution
     with open(f'{cwd}/solution.py', "wb+") as f:
         f.write(model_solution.file.read())
-    with open(f'{cwd}/description.md', "w+") as f:
+    with open(f'{cwd}/statement.md', "w+") as f:
         f.write(description)
 
     return { "info": f"Generated content at files/{code}" } 
