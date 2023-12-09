@@ -3,6 +3,7 @@
 
     let formatterInput;
     let validatorInput;
+    let modelSolutionInput;
     let generatorsInput;
 
     let formData = {
@@ -20,15 +21,16 @@
     async function handleSubmit(event) {
       event.preventDefault();
 
+      const toSubmit = new FormData();
+      for (const key in formData) {
+        toSubmit.append(key, formData[key]);
+      }
+
       try {
-        console.log("Submitting", formData);
-        const response = await fetch('http://127.0.0.1:8000/new_problem', {
+        console.log("Submitting", toSubmit);
+        const response = await fetch('http://localhost:8000/new_problem', {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ title: "wow", code: "hello" }),
-          mode: "cors"
+          body: toSubmit
         })
         console.log(await response.json())
   
@@ -93,6 +95,15 @@
             on:change={() => formData.formatter = formatterInput.files[0]}
           />    
         </label>
+        <label for="formatter">
+            Model Solution:
+          <input
+            type="file"
+            name="model_solution"
+            bind:this={modelSolutionInput}
+            on:change={() => formData.model_solution = modelSolutionInput.files[0]}
+          />    
+        </label>
         <label for="generators">
             Test Generators:
           <input
@@ -100,7 +111,7 @@
             name="generators"
             multiple
             bind:this={generatorsInput}
-            on:change={() => formData.generators = generatorsInput.files}
+            on:change={() => formData.generators = generatorsInput.files[0]}
           />
         </label>
         <label for="testscript">
