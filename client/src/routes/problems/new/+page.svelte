@@ -1,26 +1,46 @@
 <script>
     import { goto } from '$app/navigation'
 
-    let scorerInput;
+    let formatterInput;
     let validatorInput;
     let generatorsInput;
 
     let formData = {
       title: '',
       code: '',
-      timeLimit: 2000,
-      language: 'C++',
       description: '',
-      scorer: null,
+      subtasks: 1,
+      model_solution: null,
+      testscript: '',
       generators: [],
-      generatorCode: '',
-      validator: null
+      validator: null,
+      formatter: null
     };
   
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
       event.preventDefault();
-      console.log("Submitted", formData);
-      goto(`/problem/${formData.code}/view`);
+
+      try {
+        console.log("Submitting", formData);
+        const response = await fetch('http://127.0.0.1:8000/new_problem', {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ title: "wow", code: "hello" }),
+          mode: "cors"
+        })
+        console.log(await response.json())
+  
+        if (response.ok) {
+          goto(`/problem/${formData.code}/view`);
+        } else {
+          console.error("Upload Failed")
+        }
+      } catch (err) {
+        console.error('An error occurred', err)
+      }
+
     }
   </script>
   
@@ -46,25 +66,14 @@
             required
           />
         </label>
-        <label for="timeLimit">
-            Time Limit (ms): 
-          <input
-            type="number"
-            name="timeLimit"
-            bind:value={formData.timeLimit}
-            min="100"
-            max="10000"
-          />
-        </label>
-        <label for="language">
-            Language: 
-          <select
-            name="language"
-            bind:value={formData.language}
-          >
-            <option value="cpp">C++</option>
-            <option value="python">Python</option>
-          </select>
+        <label for="subtasks">
+          Subtasks
+          <input 
+            type="number" 
+            name="subtasks"
+            min="1"
+            max="100"
+            bind:value={formData.subtasks}>
         </label>
         <label for="description">
             <p>Problem Description:</p>
@@ -75,13 +84,13 @@
             bind:value={formData.description}
           ></textarea>
         </label>
-        <label for="scorer">
-            Scorer:
+        <label for="formatter">
+            Formatter:
           <input
             type="file"
-            name="scorer"
-            bind:this={scorerInput}
-            on:change={() => formData.scorer = scorerInput.files[0]}
+            name="formatter"
+            bind:this={formatterInput}
+            on:change={() => formData.formatter = formatterInput.files[0]}
           />    
         </label>
         <label for="generators">
@@ -94,12 +103,12 @@
             on:change={() => formData.generators = generatorsInput.files}
           />
         </label>
-        <label for="generatorCode">
+        <label for="testscript">
           <textarea
-            name="generatorCode"
+            name="testscript"
             cols="30" rows="10"
-            placeholder="Generator Runner (bash)"
-            bind:value={formData.generatorCode}
+            placeholder="Testscript"
+            bind:value={formData.testscript}
           ></textarea>
         </label>
         <label for="validator">
