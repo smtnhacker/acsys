@@ -1,6 +1,13 @@
+import os
+import subprocess
 from typing import Annotated, List
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+
+import uuid
+
+def gen_uid():
+    return str(uuid.uuid4())
 
 app = FastAPI(debug=True)
 
@@ -34,4 +41,15 @@ async def create_new_problem(
     validator: UploadFile = File(...),
     formatter: UploadFile = File(...)
 ):
-    pass
+    
+    uid = gen_uid()
+    
+    # save all the necessary files here
+    os.mkdir(f"files/{uid}")
+    cwd = os.path.join(os.getcwd(), 'files', uid)
+
+    # try to run kompgen
+    print("Running:", f'kg init {title} --subtask {subtasks}')
+    subprocess.Popen(['kg', 'init', title, '--subtask', str(subtasks)], cwd=cwd)    
+
+    return { "info": f"Generated content at {uid}" } 
