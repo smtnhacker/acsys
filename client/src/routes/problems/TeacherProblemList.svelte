@@ -46,7 +46,7 @@
         placeholder="Class ID"
         bind:value={classID}
       />
-      <button>New Problem</button>
+      <a href="/problems/new">New Problem</a>
     </div>
     <div>
       {#each problems as problem (problem.code)}

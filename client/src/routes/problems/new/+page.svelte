@@ -1,4 +1,6 @@
 <script>
+    import { goto } from '$app/navigation'
+
     let scorerInput;
     let validatorInput;
     let generatorsInput;
@@ -18,6 +20,7 @@
     function handleSubmit(event) {
       event.preventDefault();
       console.log("Submitted", formData);
+      goto(`/problem/${formData.code}/view`);
     }
   </script>
   
@@ -107,6 +110,9 @@
             bind:this={validatorInput}
             on:change={() => formData.validator = validatorInput.files[0]}
           />
+        </label>
+        <label>
+            <input class="cursor-pointer" type="submit" value="Create New Problem">
         </label>
       </form>
     </div>

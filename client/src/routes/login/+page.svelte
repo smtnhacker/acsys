@@ -1,4 +1,6 @@
 <script>
+  import { goto } from '$app/navigation'
+
   let formData = {
     email: "",
     password: "",
@@ -16,6 +18,7 @@
   function handleSubmit(event) {
     event.preventDefault();
     console.log("Submitted", formData);
+    goto('/dashboard')
   }
 </script>
 
