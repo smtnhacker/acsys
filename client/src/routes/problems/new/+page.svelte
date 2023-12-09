@@ -65,6 +65,7 @@
             name="code"
             placeholder="Problem Code"
             bind:value={formData.code}
+            on:input={e=>formData.code = e.target.value.replace(/[^a-z0-9]/gi, '')}
             required
           />
         </label>
