@@ -1,5 +1,6 @@
 import os
 import subprocess
+import json
 from typing import Annotated, List
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -60,5 +61,12 @@ async def create_new_problem(
         f.write(model_solution.file.read())
     with open(f'{cwd}/statement.md', "w+") as f:
         f.write(description)
+    
+    # update the title
+    with open(f'{cwd}/details.json') as f:
+        details = json.load(f)
+    details['title'] = title
+    with open(f'{cwd}/details.json', 'w+') as f:
+        json.dump(details, f)
 
     return { "info": f"Generated content at files/{code}" } 
