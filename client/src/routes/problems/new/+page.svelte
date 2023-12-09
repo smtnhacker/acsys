@@ -1,4 +1,8 @@
 <script>
+    let scorerInput;
+    let validatorInput;
+    let generatorsInput;
+
     let formData = {
       title: '',
       code: '',
@@ -11,16 +15,6 @@
       validator: null
     };
   
-    function handleChange(event) {
-      const { name, value, type, files } = event.target;
-  
-      if (type === "file") {
-        formData[name] = files[0];
-      } else {
-        formData[name] = type === "number" ? Number(value) : value;
-      }
-    }
-  
     function handleSubmit(event) {
       event.preventDefault();
       console.log("Submitted", formData);
@@ -30,14 +24,13 @@
   <div>
     <div><h1>ACSys | Create a New Problem</h1></div>
     <div>
-      <form on:submit={handleSubmit}>
+      <form class="flex flex-col" on:submit={handleSubmit}>
         <label for="title">
           <input
             type="text"
             name="title"
             placeholder="Problem Name"
             bind:value={formData.title}
-            on:input={handleChange}
             required
           />
         </label>
@@ -47,60 +40,56 @@
             name="code"
             placeholder="Problem Code"
             bind:value={formData.code}
-            on:input={handleChange}
             required
           />
         </label>
         <label for="timeLimit">
+            Time Limit (ms): 
           <input
             type="number"
             name="timeLimit"
-            placeholder="Time Limit (ms)"
             bind:value={formData.timeLimit}
-            on:input={handleChange}
             min="100"
             max="10000"
           />
         </label>
         <label for="language">
+            Language: 
           <select
             name="language"
             bind:value={formData.language}
-            on:change={handleChange}
           >
             <option value="cpp">C++</option>
             <option value="python">Python</option>
           </select>
         </label>
         <label for="description">
+            <p>Problem Description:</p>
           <textarea
             name="description"
             cols="30" rows="10"
             placeholder="Problem Description"
             bind:value={formData.description}
-            on:input={handleChange}
           ></textarea>
         </label>
         <label for="scorer">
+            Scorer:
           <input
             type="file"
             name="scorer"
-            on:change={handleChange}
-          />
-          {#if formData.scorer}
-            <p>Scorer: {formData.scorer.name}</p>
-          {/if}
+            bind:this={scorerInput}
+            on:change={() => formData.scorer = scorerInput.files[0]}
+          />    
         </label>
         <label for="generators">
+            Test Generators:
           <input
             type="file"
             name="generators"
             multiple
-            on:change={handleChange}
+            bind:this={generatorsInput}
+            on:change={() => formData.generators = generatorsInput.files}
           />
-          {#if formData.generators.length > 0}
-            <p>Number of Generators: {formData.generators.length}</p>
-          {/if}
         </label>
         <label for="generatorCode">
           <textarea
@@ -108,18 +97,16 @@
             cols="30" rows="10"
             placeholder="Generator Runner (bash)"
             bind:value={formData.generatorCode}
-            on:input={handleChange}
           ></textarea>
         </label>
         <label for="validator">
+            Validator:
           <input
             type="file"
             name="validator"
-            on:change={handleChange}
+            bind:this={validatorInput}
+            on:change={() => formData.validator = validatorInput.files[0]}
           />
-          {#if formData.validator}
-            <p>Validator: {formData.validator.name}</p>
-          {/if}
         </label>
       </form>
     </div>

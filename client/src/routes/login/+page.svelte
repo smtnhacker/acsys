@@ -2,7 +2,7 @@
   let formData = {
     email: "",
     password: "",
-    isTeacher: false,
+    isTeacher: true,
   };
 
   function handleChange(event) {
@@ -22,7 +22,7 @@
 <div>
   <div class="header">ACSys</div>
   <div>
-    <form on:submit={handleSubmit}>
+    <form class="flex flex-col" on:submit={handleSubmit}>
       <h2>Login</h2>
       <label for="email">
         <input
@@ -53,7 +53,9 @@
           on:change={handleChange}
         />
       </label>
-      <input type="submit" value="Login" />
+      <label>
+        <input class="cursor-pointer" type="submit" value="Login" />
+      </label>
     </form>
   </div>
 </div>

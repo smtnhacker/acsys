@@ -1,5 +1,4 @@
 <script>
-    import { onMount } from "svelte";
     import ListEntry from "./ListEntry.svelte";
   
     const SAMPLE = [
@@ -27,19 +26,12 @@
   
     let classID = "";
     let problems = [];
+
+    $: problems = SAMPLE.filter(
+      (problem) => 
+        classID === "" || problem.class.toLowerCase() === classID.toLowerCase()
+    )
   
-    function handleClassIDChange(event) {
-      classID = event.target.value;
-    }
-  
-    function filterProblems() {
-      problems = SAMPLE.filter(
-        (problem) =>
-          classID === "" || problem.class.toLowerCase() === classID.toLowerCase()
-      );
-    }
-  
-    onMount(filterProblems);
   </script>
   
   <div>
@@ -52,20 +44,20 @@
         type="text"
         name="class"
         placeholder="Class ID"
-        on:input={handleClassIDChange}
+        bind:value={classID}
       />
       <button>New Problem</button>
     </div>
     <div>
       {#each problems as problem (problem.code)}
-        <li>
+        <div>
           <ListEntry
             name={problem.name}
             classID={problem.class}
             code={problem.code}
             isEditable={true}
           />
-        </li>
+        </div>
       {/each}
     </div>
   </div>
