@@ -48,25 +48,34 @@ async def create_new_problem(
     cwd = os.path.join(cwd, code)
 
     # save the uploaded files
-    with open(f'{cwd}/formatter.py', "wb+") as f:
+    with open(os.path.join(cwd, 'formatter.py'), "wb+") as f:
         f.write(formatter.file.read())
-    with open(f'{cwd}/validator.py', "wb+") as f:
+    with open(os.path.join(cwd, 'validator.py'), "wb+") as f:
         f.write(validator.file.read())
-    with open(f'{cwd}/generator.py', "wb+") as f:
+    with open(os.path.join(cwd, generators.filename), "wb+") as f:
         f.write(generators.file.read())
-    with open(f'{cwd}/testscript', "w+") as f:
+    with open(os.path.join(cwd, 'testscript'), "w+") as f:
         f.write(testscript)  
     solution_type = model_solution.filename.split('.')[-1] # TODO: be able to use different kinds of solution
-    with open(f'{cwd}/solution.py', "wb+") as f:
+    with open(os.path.join(cwd, 'solution.py'), "wb+") as f:
         f.write(model_solution.file.read())
-    with open(f'{cwd}/statement.md', "w+") as f:
+    with open(os.path.join(cwd, 'statement.md'), "w+") as f:
         f.write(description)
     
     # update the title
-    with open(f'{cwd}/details.json') as f:
+    with open(os.path.join(cwd, 'details.json')) as f:
         details = json.load(f)
     details['title'] = title
-    with open(f'{cwd}/details.json', 'w+') as f:
+    with open(os.path.join(cwd, 'details.json'), 'w+') as f:
         json.dump(details, f)
+    
+    # generate the content
+    print("Generating the test cases")
+    subprocess.call(['kg', 'make', 'all'], cwd=cwd)
 
     return { "info": f"Generated content at files/{code}" } 
+
+@app.post("/{code}/submit")
+def judge_solution(code: str, attempt: UploadFile = File(...)):
+
+    return { "problem code": code, "submission": attempt.filename }
