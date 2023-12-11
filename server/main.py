@@ -1,6 +1,7 @@
 import os
 import subprocess
 import json
+import uuid
 from typing import Annotated, List
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -21,6 +22,9 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
+def get_cwd():
+    return os.path.join(os.getcwd(), 'files')
+
 @app.get("/")
 def health_check():
     return "Working!!!"
@@ -40,7 +44,7 @@ async def create_new_problem(
 
     
     # save all the necessary files here
-    cwd = os.path.join(os.getcwd(), 'files')
+    cwd = get_cwd()
 
     # try to run kompgen
     print("Running:", f'kg init {code} --subtask {subtasks}')
@@ -78,4 +82,32 @@ async def create_new_problem(
 @app.post("/{code}/submit")
 def judge_solution(code: str, attempt: UploadFile = File(...)):
 
-    return { "problem code": code, "submission": attempt.filename }
+    cwd = os.path.join(get_cwd(), code)
+
+    # check if problem exists
+    if not os.path.isdir(cwd):
+        return { "status": "fail", "info": "Invalid problem code" }
+
+    # save the submission
+    solution_type = attempt.filename.split('.')[-1]
+    submission_filepath = str(uuid.uuid4()) + '.' + solution_type
+    with open(os.path.join(cwd, submission_filepath), 'wb+') as f:
+        f.write(attempt.file.read())
+    
+    # test the attempt on the problem
+    command = f'kg test -i tests\\*.in -o tests\\*.ans -f {submission_filepath}'.split()
+    fail_msg = None
+    try:
+        output = subprocess.check_output(command, cwd=cwd, universal_newlines=True)
+        results_str = list(filter(lambda line: line[:4] == 'File' and 'CHECKING AGAINST' not in line, output.split('\n')))
+        results_score = list(map(lambda line: 1 if 'correct' in line else 0, results_str))
+    except Exception as e:
+        fail_msg = { "status": "fail", "info": e }
+    
+    # delete temp file
+    os.remove(os.path.join(cwd, submission_filepath))
+
+    if fail_msg:
+        return fail_msg
+
+    return { "status": "success", "submission": results_score }
