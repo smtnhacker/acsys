@@ -1,6 +1,12 @@
 <script>
     import TeacherProblemList from "./TeacherProblemList.svelte";
+    import StudentProblemList from "./StudentProblemList.svelte";
+    let user = "Student";
 </script>
 <div class="container h-screen bg-slate-800">
-    <TeacherProblemList />
+    {#if user == "Student"}
+        <StudentProblemList />
+    {:else}
+        <TeacherProblemList />
+    {/if}
 </div>
