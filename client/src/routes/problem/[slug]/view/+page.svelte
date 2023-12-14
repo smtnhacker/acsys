@@ -1,18 +1,18 @@
 <script>
     export let data;
+
+    import SvelteMarkdown from 'svelte-markdown';
+
     let attemptInput;
     let score = 0;
     let hasScore = false;
 
-    let problems = [
-        {
-            title: "SUM OF TWO SEQUENCES",
-            statement: "Attack feet behind the couch destroy couch flop over give attitude hide when guests come over hopped up on goofballs, hunt anything that moves lick butt chase mice flop over swat at dog. Flop over give attitude  rub face on everything all of a sudden go crazy hunt anything that moves attack feet flop over hide when guests come over destroy couch swat at dog hopped up on goofballs  stand in front of the computer screen , bag stretch chase mice chase imaginary bugs  intrigued by the shower lick butt behind the couch  sweet beast under the bed leave dead animals as gifts inspect anything brought into the house, hunt anything that moves leave dead animals as gifts behind the couch give attitude inspect anything brought into the house sweet beast under the bed lick butt  rub face on everything hopped up on goofballs  intrigued by the shower. <br><br> Flop over destroy couch  give attitude inspect anything brought into the house behind the couch swat at dog leave dead animals as gifts bag stretch, hunt anything that moves all of a sudden go crazy  stand in front of the computer screen  lick butt  intrigued by the shower  rub face on everything chase imaginary bugs flop over sweet beast under the bed, hopped up on goofballs chase mice hide when guests come over attack feet give attitude all of a sudden go crazy sweet beast under the bed. Hunt anything that moves flop over bag stretch inspect anything brought into the house  destroy couch  stand in front of the computer screen  chase mice, attack feet swat at dog leave dead animals as gifts hide when guests come over give attitude behind the couch chase imaginary bugs sweet beast under the bed, flop over hopped up on goofballs lick butt  rub face on everything  intrigued by the shower all of a sudden go crazy.",
-            language: "Python",
-            time: "20s",
-            memory: "500mb",
-        },
-    ]
+    let problem = {
+        ...data.details,
+        language: "Python",
+        time: "2s",
+        memory: "500mb"
+    }
     
     async function handleSubmit(event) {
         event.preventDefault();
@@ -21,15 +21,15 @@
 
         try {
             console.log("Submitting", toSubmit);
-            const response = await fetch(`http://localhost:8000/${data.slug}/submit`, {
+            const response = await fetch(`http://localhost:8000/${problem.code}/submit`, {
                 method: "POST",
                 body: toSubmit
             })
-            data = await response.json()
+            const res_data = await response.json()
     
-            if (response.ok && data.status === 'success') {
+            if (response.ok && res_data.status === 'success') {
                 hasScore = true;
-                score = Array.from(data.submission).reduce((item, total) => total + item, 0) / Array.from(data.submission).length;
+                score = Array.from(res_data.submission).reduce((item, total) => total + item, 0) / Array.from(res_data.submission).length;
             } else {
                 console.error("Upload Failed")
             }
@@ -43,11 +43,13 @@
 <div class="flex h-screen text-gray-300">
     <div class="flex-none w-3/4 h-screen bg-[#042A38] py-6 px-8 overflow-y-auto">
         <div class="mb-[5vh]">
-            <button>back</button>
-            <span class="text-[7vh]">{problems[0].title}</span>
+            <button>back</button> <br/>
+            <span class="text-[7vh]">{problem.title}</span>
         </div>
         <div class="text-justify text-[3vh]">
-            <p>{@html problems[0].statement}</p>
+            <p>
+                <SvelteMarkdown source={problem.statement} />
+            </p>
         </div>
     </div>
     <div class="flex-none w-1/4 bg-[#105F7C] p-5">
@@ -55,9 +57,9 @@
             <a href="./">Home</a>
         </div>
         <div class="my-11">
-            <p>Language: {problems[0].language}</p>
-            <p>Time Limit: {problems[0].time}</p>
-            <p>Memory Limit: {problems[0].memory}</p>
+            <p>Language: {problem.language}</p>
+            <p>Time Limit: {problem.time}</p>
+            <p>Memory Limit: {problem.memory}</p>
         </div>
         <div>
             <form on:submit={handleSubmit}>

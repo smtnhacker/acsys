@@ -59,6 +59,18 @@ def get_problem_list():
                 print("Error", e)
     return res
 
+@app.get("/problem/{code}")
+def get_problem(code: str):
+
+    # check if problem exists
+    cwd = os.path.join(get_cwd(), code)
+
+    if not os.path.isdir(cwd):
+        return { "status": "Fail", "info": "Invalid problem code" }
+    
+    details = get_details(cwd)
+    return details
+
 @app.post("/new_problem")
 async def create_new_problem(
     title: str = Form(...),
