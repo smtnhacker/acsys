@@ -53,7 +53,9 @@
         <div class="w-2/3">
           <h1 class="text-[7vh] w-2/3 flex flex-row">
             <div>
-              <img class="image flex-none my-4 mx-3 hover:cursor-pointer" src="/back_icon.png"/>
+              <a href='/problems'>
+                <img class="image flex-none my-4 mx-3 hover:cursor-pointer" src="/back_icon.png"/>
+              </a>
             </div>
             <div>
               Create a New Problem
