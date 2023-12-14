@@ -43,7 +43,9 @@
 <div class="flex h-screen text-gray-300">
     <div class="flex-none w-3/4 h-screen bg-[#042A38] py-6 px-8 overflow-y-auto">
         <div class="mb-[5vh]">
-            <button>back</button> <br/>
+            <button>
+                <a href="/problems">Back</a>
+            </button> <br/>
             <span class="text-[7vh]">{problem.title}</span>
         </div>
         <div class="text-justify text-[3vh]">
