@@ -25,9 +25,51 @@ app.add_middleware(
 def get_cwd():
     return os.path.join(os.getcwd(), 'files')
 
+def get_details(problem_path):
+    details_path = os.path.join(problem_path, 'details.json')
+    with open(details_path) as f:
+        details = json.load(f)
+    
+    statement_path = os.path.join(problem_path, 'statement.md')
+    with open(statement_path, encoding='utf-8') as f:
+        statement = f.read()
+
+    return {
+        "title": details.get('title', 'Missing Title'),
+        "code": problem_path.split(os.path.sep)[-1],
+        "class_code": details.get('class_code', 'A'),
+        "statement": statement,
+        "status": "Incomplete"
+    }
+
 @app.get("/")
 def health_check():
     return "Working!!!"
+
+@app.get("/problems")
+def get_problem_list():
+    cwd = get_cwd()
+    res = []
+    with os.scandir(cwd) as problems:
+        for problem in problems:
+            try:
+                details = get_details(problem.path)
+                res.append(details)
+            except Exception as e:
+                print("Error", e)
+    return res
+
+@app.get("/problem/{code}")
+def get_problem(code: str):
+
+    # check if problem exists
+    cwd = os.path.join(get_cwd(), code)
+
+    if not os.path.isdir(cwd):
+        return { "status": "Fail", "info": "Invalid problem code" }
+    
+    details = get_details(cwd)
+    return details
 
 @app.post("/new_problem")
 async def create_new_problem(
@@ -39,7 +81,9 @@ async def create_new_problem(
     testscript: str = Form(...),
     generators: UploadFile = File(...), # should be a list of files in the future
     validator: UploadFile = File(...),
-    formatter: UploadFile = File(...)
+    formatter: UploadFile = File(...),
+    # these are data needed for the UI
+    class_code: str = Form(...)
 ):
 
     
@@ -66,10 +110,11 @@ async def create_new_problem(
     with open(os.path.join(cwd, 'statement.md'), "w+") as f:
         f.write(description)
     
-    # update the title
+    # update the data
     with open(os.path.join(cwd, 'details.json')) as f:
         details = json.load(f)
     details['title'] = title
+    details['class_code'] = class_code
     with open(os.path.join(cwd, 'details.json'), 'w+') as f:
         json.dump(details, f)
     

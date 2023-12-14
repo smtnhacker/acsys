@@ -15,7 +15,8 @@
       testscript: '',
       generators: [],
       validator: null,
-      formatter: null
+      formatter: null,
+      class_code: ''
     };
   
     async function handleSubmit(event) {
@@ -73,14 +74,23 @@
             Problem Code
           </label>
           <input
-              type="text"
-              name="code"
-              placeholder="Problem Code"
-              bind:value={formData.code}
-              on:input={e=>formData.code = e.target.value.replace(/[^a-z\-\_]/gi, '')}
-              class="w-4/5 shadow appearance-none border rounded py-1 mx-[11vh] block"
-              required
-            />
+            type="text"
+            name="code"
+            placeholder="Problem Code"
+            bind:value={formData.code}
+            on:input={e=>formData.code = e.target.value.replace(/[^a-z\-\_]/gi, '')}
+            class="w-4/5 shadow appearance-none border rounded py-1 mx-[11vh] block"
+            required
+          />
+          <label for="class_code" class="pt-3 px-[11vh] block">
+            Class Code
+          </label>
+          <input 
+            type="text" 
+            name="class_code"
+            placeholder="Class Code"
+            class="w-4/5 shadow appearance-none border rounded py-1 mx-[11vh] block"
+            bind:value={formData.class_code} >
           <label for="subtasks" class="pt-3 px-[11vh] block">
             Subtasks
           </label>
