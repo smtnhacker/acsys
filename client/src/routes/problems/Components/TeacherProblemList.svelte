@@ -4,39 +4,12 @@
 
     $: console.log(problems)
   
-    const SAMPLE = [
-      {
-        status: "Incomplete",
-        class: "A",
-        name: "Simple Operators",
-        code: "simple-op",
-      },
-      {
-        status: "Complete",
-        class: "A",
-        name: "Conditionals",
-        code: "if-else",
-      },
-      {
-        status: "Incomplete",
-        class: "B",
-        name: "Peeta and Binary Search",
-        code: "bsearch",
-      },
-      {
-        status: "Complete",
-        class: "C",
-        name: "Tesseract and the Infinite Tsukuyomi",
-        code: "tesseract",
-      },
-    ];
-  
     let classID = "";
     let shownProblems = [];
 
     $: shownProblems = problems.filter(
       (problem) => 
-        classID === "" || problem.class.toLowerCase() === classID.toLowerCase()
+        classID === "" || problem.class_code.toLowerCase() === classID.toLowerCase()
     )
   
   </script>
