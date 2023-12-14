@@ -15,7 +15,8 @@
       testscript: '',
       generators: [],
       validator: null,
-      formatter: null
+      formatter: null,
+      class_code: ''
     };
   
     async function handleSubmit(event) {
@@ -68,6 +69,13 @@
             on:input={e=>formData.code = e.target.value.replace(/[^a-z\-\_]/gi, '')}
             required
           />
+        </label>
+        <label for="class_code">
+          <input 
+            type="text" 
+            name="class_code"
+            placeholder="Class Code"
+            bind:value={formData.class_code} >
         </label>
         <label for="subtasks">
           Subtasks

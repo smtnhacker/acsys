@@ -1,5 +1,8 @@
 <script>
+    export let problems;
     import ListEntry from "./ListEntry.svelte";
+
+    $: console.log(problems)
   
     const SAMPLE = [
       {
@@ -29,9 +32,9 @@
     ];
   
     let classID = "";
-    let problems = [];
+    let shownProblems = [];
 
-    $: problems = SAMPLE.filter(
+    $: shownProblems = problems.filter(
       (problem) => 
         classID === "" || problem.class.toLowerCase() === classID.toLowerCase()
     )
@@ -65,12 +68,12 @@
       <span class="text-gray-300 flex-none w-1/4">Code</span>
     </div>
     <div>
-      {#each problems as problem (problem.code)}
+      {#each shownProblems as problem (problem.code)}
         <div>
           <ListEntry
             status={problem.status}
-            name={problem.name}
-            classID={problem.class}
+            name={problem.title}
+            classID={problem.class_code}
             code={problem.code}
             isEditable={true}
           />
